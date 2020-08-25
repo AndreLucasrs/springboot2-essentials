@@ -1,3 +1,11 @@
 server:
   error:
     include-stacktrace: never
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/anime?serverTimeZone=America/Sao_Paulo&createDatabaseIfNotExist=True&useSSL=false
+    username: postgres
+    password: postgres
+  jpa:
+    hibernate:
+      ddl-auto: update
