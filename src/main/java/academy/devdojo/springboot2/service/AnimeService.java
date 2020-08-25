@@ -16,14 +16,18 @@ public class AnimeService {
     private final Utils utils;
     private final AnimeRepository repository;
 
+    @Transactional(readOnly = true)
     public List<Anime> listAll() {
         return repository.findAll();
     }
 
+    @Transactional(readOnly = true)
     public List<Anime> findByName(String name) {
         return repository.findByNameIgnoreCase(name);
     }
 
+    // se vc tiver usando uma exeception chechked save (Anime anime) throws Exceptions
+    // o rollback para funcionar tem que adicionar (rollbackFor = Exception.class)
     @Transactional
     public Anime save(Anime anime) {
         return repository.save(anime);
