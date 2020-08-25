@@ -47,4 +47,10 @@ public class AnimeController {
         Anime animeSalvo = repository.save(anime);
         return ResponseEntity.ok(animeSalvo);
     }
+
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable Long id) {
+        repository.delete(id);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }

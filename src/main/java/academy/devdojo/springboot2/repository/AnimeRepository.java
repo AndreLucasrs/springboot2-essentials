@@ -1,7 +1,9 @@
 package academy.devdojo.springboot2.repository;
 
 import academy.devdojo.springboot2.domain.Anime;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,4 +34,14 @@ public class AnimeRepository {
         animes.add(anime);
         return anime;
     }
+
+    public void delete(Long id) {
+        animes.remove(
+                animes.stream()
+                .filter(anime -> anime.getId().equals(id))
+                .findFirst()
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Anime não encontrado"))
+        );
+    }
+
 }
