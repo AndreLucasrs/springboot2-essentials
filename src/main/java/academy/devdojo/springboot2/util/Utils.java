@@ -1,10 +1,9 @@
 package academy.devdojo.springboot2.util;
 
 import academy.devdojo.springboot2.domain.Anime;
+import academy.devdojo.springboot2.exception.ResourceNotFoundException;
 import academy.devdojo.springboot2.repository.AnimeRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -19,7 +18,7 @@ public class Utils {
     public Anime findAnimeOrThrowNotFound(Long id, AnimeRepository animeRepository) {
         return animeRepository
                 .findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Anime não encontrado"));
+                .orElseThrow(() -> new ResourceNotFoundException("Anime não encontrado"));
 
     }
 }
