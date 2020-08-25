@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -40,7 +41,7 @@ public class AnimeController {
 
 
     @PostMapping
-    public ResponseEntity<Anime> save(@RequestBody Anime anime) {
+    public ResponseEntity<Anime> save(@Valid @RequestBody Anime anime) {
         Anime animeSalvo = service.save(anime);
         return ResponseEntity.ok(animeSalvo);
     }
@@ -52,7 +53,7 @@ public class AnimeController {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<Void> update(@RequestBody Anime anime) {
+    public ResponseEntity<Void> update(@Valid @RequestBody Anime anime) {
         service.update(anime);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
