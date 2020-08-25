@@ -1,9 +1,9 @@
 package academy.devdojo.springboot2.repository;
 
 import academy.devdojo.springboot2.domain.Anime;
-import org.springframework.http.HttpStatus;
+import academy.devdojo.springboot2.util.Utils;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,8 +11,10 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Repository
+@RequiredArgsConstructor
 public class AnimeRepository {
 
+    private final Utils utils;
     private static List<Anime> animes;
 
     static {
@@ -20,7 +22,7 @@ public class AnimeRepository {
                 Arrays.asList(
                         new Anime(1L, "Naruto"),
                         new Anime(2L, "Boku No Hero"),
-                        new Anime(3L,"Mob Psycho 100")
+                        new Anime(3L, "Mob Psycho 100")
                 )
         );
     }
@@ -36,12 +38,16 @@ public class AnimeRepository {
     }
 
     public void delete(Long id) {
-        animes.remove(
-                animes.stream()
-                .filter(anime -> anime.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Anime não encontrado"))
-        );
+        animes.remove(utils.findAnimeOrThrowNotFound(id, animes));
+    }
+
+    public Anime findById(Long id) {
+        return utils.findAnimeOrThrowNotFound(id, animes);
+    }
+
+    public void update(Anime anime) {
+        animes.remove(utils.findAnimeOrThrowNotFound(anime.getId(), animes));
+        animes.add(anime);
     }
 
 }

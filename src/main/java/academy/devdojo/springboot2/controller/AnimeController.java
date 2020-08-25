@@ -2,7 +2,7 @@ package academy.devdojo.springboot2.controller;
 
 import academy.devdojo.springboot2.domain.Anime;
 import academy.devdojo.springboot2.repository.AnimeRepository;
-import academy.devdojo.springboot2.util.DateUtil;
+import academy.devdojo.springboot2.util.Utils;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
 import java.util.List;
 
 @RestController
@@ -20,12 +19,12 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnimeController {
 
-    private final DateUtil dateUtil;
+    private final Utils utils;
     private final AnimeRepository repository;
 
     @GetMapping
     public ResponseEntity<List<Anime>> listaAll() {
-        log.info("Formatando data {}", dateUtil.formatLocalDateTimeToDataBaseStyle(LocalDateTime.now()));
+        log.info("Formatando data {}", utils.formatLocalDateTimeToDataBaseStyle(LocalDateTime.now()));
 
         return ResponseEntity.ok(repository.listAll());
     }
@@ -33,12 +32,7 @@ public class AnimeController {
     @GetMapping(path = "/{id}")
     public ResponseEntity<Anime> findById(@PathVariable Long id) {
 
-        Anime animeEncontrado = repository.listAll()
-                .stream()
-                .filter(anime -> anime.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NO_CONTENT, "Anime não encontrado"));
-
+        Anime animeEncontrado = repository.findById(id);
         return ResponseEntity.ok(animeEncontrado);
     }
 
@@ -51,6 +45,12 @@ public class AnimeController {
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         repository.delete(id);
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<Void> update(@RequestBody Anime anime) {
+        repository.update(anime);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
