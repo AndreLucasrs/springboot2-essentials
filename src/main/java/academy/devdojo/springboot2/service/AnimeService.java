@@ -20,6 +20,10 @@ public class AnimeService {
         return repository.findAll();
     }
 
+    public List<Anime> findByName(String name) {
+        return repository.findByNameIgnoreCase(name);
+    }
+
     @Transactional
     public Anime save(Anime anime) {
         return repository.save(anime);

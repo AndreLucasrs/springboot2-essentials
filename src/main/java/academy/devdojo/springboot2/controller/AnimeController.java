@@ -16,36 +16,44 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnimeController {
 
-    private final AnimeService repository;
+    private final AnimeService service;
 
     @GetMapping
     public ResponseEntity<List<Anime>> listaAll() {
 
-        return ResponseEntity.ok(repository.listAll());
+        return ResponseEntity.ok(service.listAll());
     }
 
     @GetMapping(path = "/{id}")
     public ResponseEntity<Anime> findById(@PathVariable Long id) {
 
-        Anime animeEncontrado = repository.findById(id);
+        Anime animeEncontrado = service.findById(id);
         return ResponseEntity.ok(animeEncontrado);
     }
 
+    @GetMapping(path = "/find")
+    public ResponseEntity<List<Anime>> findByName(@RequestParam String name) {
+
+        List<Anime> animes = service.findByName(name);
+        return ResponseEntity.ok(animes);
+    }
+
+
     @PostMapping
     public ResponseEntity<Anime> save(@RequestBody Anime anime) {
-        Anime animeSalvo = repository.save(anime);
+        Anime animeSalvo = service.save(anime);
         return ResponseEntity.ok(animeSalvo);
     }
 
     @DeleteMapping(value = "/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
-        repository.delete(id);
+        service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
     @PutMapping(value = "/{id}")
     public ResponseEntity<Void> update(@RequestBody Anime anime) {
-        repository.update(anime);
+        service.update(anime);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
