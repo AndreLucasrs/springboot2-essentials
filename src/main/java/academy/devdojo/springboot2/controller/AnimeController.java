@@ -1,15 +1,13 @@
 package academy.devdojo.springboot2.controller;
 
 import academy.devdojo.springboot2.domain.Anime;
-import academy.devdojo.springboot2.repository.AnimeRepository;
-import academy.devdojo.springboot2.util.Utils;
+import academy.devdojo.springboot2.service.AnimeService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -18,12 +16,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AnimeController {
 
-    private final Utils utils;
-    private final AnimeRepository repository;
+    private final AnimeService repository;
 
     @GetMapping
     public ResponseEntity<List<Anime>> listaAll() {
-        log.info("Formatando data {}", utils.formatLocalDateTimeToDataBaseStyle(LocalDateTime.now()));
 
         return ResponseEntity.ok(repository.listAll());
     }
