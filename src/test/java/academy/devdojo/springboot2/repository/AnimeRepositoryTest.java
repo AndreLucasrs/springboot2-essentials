@@ -1,6 +1,7 @@
 package academy.devdojo.springboot2.repository;
 
 import academy.devdojo.springboot2.domain.Anime;
+import academy.devdojo.springboot2.util.AnimeCreator;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,7 +26,7 @@ class AnimeRepositoryTest {
     @DisplayName("Save create anime when successful")
     public void saveAnimeWhenSuccessful() {
 
-        Anime anime = createAnime();
+        Anime anime = AnimeCreator.createAnimeToBeSaved();
         Anime animeSaved = this.animeRepository.save(anime);
         Assertions.assertThat(animeSaved.getId()).isNotNull();
         Assertions.assertThat(animeSaved.getName()).isNotNull();
@@ -36,7 +37,7 @@ class AnimeRepositoryTest {
     @DisplayName("Update anime when successful")
     public void updateAnimeWhenSuccessful() {
 
-        Anime anime = createAnime();
+        Anime anime = AnimeCreator.createAnimeToBeSaved();
         Anime animeSaved = this.animeRepository.save(anime);
 
         animeSaved.setName("Pokemon");
@@ -52,7 +53,7 @@ class AnimeRepositoryTest {
     @DisplayName("Delete anime when successful")
     public void deleteAnimeWhenSuccessful() {
 
-        Anime anime = createAnime();
+        Anime anime = AnimeCreator.createAnimeToBeSaved();
         Anime animeSaved = this.animeRepository.save(anime);
 
         this.animeRepository.delete(animeSaved);
@@ -66,7 +67,7 @@ class AnimeRepositoryTest {
     @DisplayName("Find by name return animes when successful")
     public void findByNameReturnAnimesWhenSuccessful() {
 
-        Anime anime = createAnime();
+        Anime anime = AnimeCreator.createAnimeToBeSaved();
         Anime animeSaved = this.animeRepository.save(anime);
 
         List<Anime> animeList = this.animeRepository.findByNameIgnoreCase(anime.getName());
@@ -99,12 +100,5 @@ class AnimeRepositoryTest {
         Assertions.assertThatExceptionOfType(ConstraintViolationException.class)
                 .isThrownBy(() -> animeRepository.save(anime))
                 .withMessageContaining("O nome do anime é obrigatorio");
-    }
-
-    private Anime createAnime() {
-        return Anime
-                .builder()
-                .name("Cowboy bebop")
-                .build();
     }
 }
