@@ -23,6 +23,10 @@ public class AnimeService {
         return repository.findAll(pageable);
     }
 
+    public List<Anime> listAll() {
+        return repository.findAll();
+    }
+
     @Transactional(readOnly = true)
     public List<Anime> findByName(String name) {
         return repository.findByNameIgnoreCase(name);
