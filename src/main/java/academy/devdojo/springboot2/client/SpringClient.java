@@ -1,6 +1,7 @@
 package academy.devdojo.springboot2.client;
 
 import academy.devdojo.springboot2.domain.Anime;
+import academy.devdojo.springboot2.wrapper.PageableResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.HttpMethod;
@@ -20,11 +21,15 @@ public class SpringClient {
         Anime anime = new RestTemplate().getForObject("http://localhost:8080/animes/{id}", Anime.class, 1);
         log.info("Anime {} ", anime);
 
-        Anime[] animeArray = new RestTemplate().getForObject("http://localhost:8080/animes/list", Anime[].class );
+        Anime[] animeArray = new RestTemplate().getForObject("http://localhost:8080/animes/list", Anime[].class);
         log.info("Anime Array{} ", Arrays.toString(animeArray));
 
         ResponseEntity<List<Anime>> animeList = new RestTemplate().exchange("http://localhost:8080/animes/list", HttpMethod.GET, null, new ParameterizedTypeReference<List<Anime>>() {
         });
         log.info("Anime List{} ", animeList.getBody());
+
+        ResponseEntity<PageableResponse<Anime>> animeListPage = new RestTemplate().exchange("http://localhost:8080/animes", HttpMethod.GET, null, new ParameterizedTypeReference<PageableResponse<Anime>>() {
+        });
+        log.info("Anime List{} ", animeListPage.getBody());
     }
 }
