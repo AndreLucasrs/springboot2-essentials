@@ -4,6 +4,8 @@ import academy.devdojo.springboot2.domain.Anime;
 import academy.devdojo.springboot2.repository.AnimeRepository;
 import academy.devdojo.springboot2.util.Utils;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +19,8 @@ public class AnimeService {
     private final AnimeRepository repository;
 
     @Transactional(readOnly = true)
-    public List<Anime> listAll() {
-        return repository.findAll();
+    public Page<Anime> listAll(Pageable pageable) {
+        return repository.findAll(pageable);
     }
 
     @Transactional(readOnly = true)
