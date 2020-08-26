@@ -16,28 +16,58 @@ public class SpringClient {
     private static final String URL = "http://localhost:8080/animes";
     
     public static void main(String[] args) {
-//        testGetWithRestTemplate();
 
-        ResponseEntity<PageableResponse<Anime>> animeListPage = new RestTemplate().exchange(URL, HttpMethod.GET, null, new ParameterizedTypeReference<PageableResponse<Anime>>() {
-        });
+        //GET
+//        testGetWithRestTemplate();
+        ResponseEntity<PageableResponse<Anime>> animeListPage = new RestTemplate()
+                .exchange(
+                        URL,
+                        HttpMethod.GET,
+                        null,
+                        new ParameterizedTypeReference<PageableResponse<Anime>>() {}
+                        );
         log.info("Anime List{} ", animeListPage.getBody());
 
-//        Anime anime = Anime
-//                .builder()
-//                .name("Attack on Titan")
-//                .build();
-//
-//        Anime animeSave = new RestTemplate().postForObject(URL, anime, Anime.class);
-//
-//        log.info("Anime Save{} ", animeSave);
-
+        //POST
+//        testPostWithRestTemplate();
         Anime animeCowboy = Anime
                 .builder()
                 .name("Cowboy Bebop")
                 .build();
 
-        ResponseEntity<Anime> animeResponse = new RestTemplate().exchange(URL, HttpMethod.POST, new HttpEntity<>(animeCowboy, createJsonHeader()), Anime.class);
+        ResponseEntity<Anime> animeResponse = new RestTemplate()
+                .exchange(
+                        URL,
+                        HttpMethod.POST,
+                        new HttpEntity<>(animeCowboy, createJsonHeader()),
+                        Anime.class
+                );
         log.info("Anime SaveResponse{} ", animeResponse.getBody());
+
+        //PUT
+        Anime animeUdate = animeResponse.getBody();
+        animeUdate.setName("Digimon");
+        ResponseEntity<Void> updateResponse = new RestTemplate()
+                .exchange(
+                        URL + "/{id}",
+                        HttpMethod.PUT,
+                        new HttpEntity<>(animeUdate, createJsonHeader()),
+                        Void.class,
+                        animeResponse.getBody().getId()
+                );
+        log.info("Anime UpdateResponse{} ", updateResponse.getStatusCode());
+
+        //DELETE
+        ResponseEntity<Void> deleteResponse = new RestTemplate()
+                .exchange(
+                        URL + "/{id}",
+                        HttpMethod.DELETE,
+                        null,
+                        Void.class,
+                        animeResponse.getBody().getId()
+                );
+
+        log.info("Anime DeleteResponse{} ", deleteResponse.getStatusCode());
     }
 
     private static HttpHeaders createJsonHeader() {
@@ -45,6 +75,17 @@ public class SpringClient {
         httpHeaders.setContentType(MediaType.APPLICATION_JSON);
 //        httpHeaders.setBearerAuth("token");
         return httpHeaders;
+    }
+
+    private static void testPostWithRestTemplate() {
+        Anime anime = Anime
+                .builder()
+                .name("Attack on Titan")
+                .build();
+
+        Anime animeSave = new RestTemplate().postForObject(URL, anime, Anime.class);
+
+        log.info("Anime Save{} ", animeSave);
     }
 
     private static void testGetWithRestTemplate() {
