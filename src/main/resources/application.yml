@@ -23,3 +23,17 @@ logging:
           descriptor:
             sql:
               BasicBinder: TRACE
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: when_authorized
+
+info:
+  app: Spring Boot 2 Essentials
+  website: https://andrelucasrs.github.io/
+  github: https://github.com/AndreLucasrs/springboot2-essentials
+  api: http://localhost:8080/swagger-ui.html
