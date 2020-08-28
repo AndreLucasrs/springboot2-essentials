@@ -16,16 +16,23 @@ import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.*;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
 import java.util.List;
@@ -38,13 +45,38 @@ import static org.mockito.ArgumentMatchers.anyLong;
 class AnimeControllerIntegrationTest {
 
     @Autowired
-    private TestRestTemplate restTemplate;
+    @Qualifier(value = "testRestTemplateRoleUser")
+    private TestRestTemplate testRestTemplateRoleUser;
 
-    @LocalServerPort
-    private int port;
+    @Autowired
+    @Qualifier(value = "testRestTemplateRoleAdmin")
+    private TestRestTemplate testRestTemplateRoleAdmin;
 
     @MockBean
     private AnimeRepository animeRepository;
+
+    @Lazy
+    @TestConfiguration
+    static class Config {
+
+        @Bean(name = "testRestTemplateRoleUser")
+        public TestRestTemplate testRestTemplateRoleUserCreator(@Value("${local.server.port}") int port) {
+            RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
+                    .rootUri("http://localhost:" + port)
+                    .basicAuthentication("dev", "test");
+
+            return new TestRestTemplate(restTemplateBuilder);
+        }
+
+        @Bean(name = "testRestTemplateRoleAdmin")
+        public TestRestTemplate testRestTemplateRoleAdminCreator(@Value("${local.server.port}") int port) {
+            RestTemplateBuilder restTemplateBuilder = new RestTemplateBuilder()
+                    .rootUri("http://localhost:" + port)
+                    .basicAuthentication("andre", "test");
+
+            return new TestRestTemplate(restTemplateBuilder);
+        }
+    }
 
     @BeforeEach
     public void setUp() {
@@ -72,7 +104,7 @@ class AnimeControllerIntegrationTest {
     public void listAllReturnListAnimesPageObjectWhenSuccessful() {
         String expectedName = AnimeCreator.createAnimeValidAnime().getName();
 
-        Page<Anime> animePage = restTemplate.exchange(
+        Page<Anime> animePage = testRestTemplateRoleUser.exchange(
                 "/animes", HttpMethod.GET,
                 null, new ParameterizedTypeReference<PageableResponse<Anime>>() {})
                 .getBody();
@@ -85,7 +117,7 @@ class AnimeControllerIntegrationTest {
     public void findByIdReturnAnimeWhenSuccessful() {
         Long expectedId = AnimeCreator.createAnimeValidAnime().getId();
 
-        Anime anime = restTemplate.getForObject("/animes/1", Anime.class);
+        Anime anime = testRestTemplateRoleUser.getForObject("/animes/1", Anime.class);
         Assertions.assertThat(anime).isNotNull();
         Assertions.assertThat(anime.getId()).isNotNull();
         Assertions.assertThat(anime.getId()).isEqualTo(expectedId);
@@ -96,7 +128,7 @@ class AnimeControllerIntegrationTest {
     public void findByNameReturnListAnimesWhenSuccessful() {
         Anime animeExpected = AnimeCreator.createAnimeValidAnime();
 
-        List<Anime> listAnimes = restTemplate.exchange(
+        List<Anime> listAnimes = testRestTemplateRoleUser.exchange(
                 "/animes/find?name='Cowboy bebop'", HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Anime>>() {})
@@ -114,7 +146,7 @@ class AnimeControllerIntegrationTest {
 
         Anime animeToBeSaved = AnimeCreator.createAnimeToBeSaved();
 
-        Anime animeSaved = restTemplate.exchange(
+        Anime animeSaved = testRestTemplateRoleUser.exchange(
                 "/animes", HttpMethod.POST,
                 createJsonHttpEntity(animeToBeSaved), Anime.class)
                 .getBody();
@@ -127,12 +159,23 @@ class AnimeControllerIntegrationTest {
     @DisplayName("delete removes the anime when successful")
     public void deleteAnimeWhenSuccessful() {
 
-        ResponseEntity<Void> responseEntity = restTemplate.exchange(
-                "/animes/1", HttpMethod.DELETE,
+        ResponseEntity<Void> responseEntity = testRestTemplateRoleAdmin.exchange(
+                "/animes/admin/1", HttpMethod.DELETE,
                 null, Void.class);
         Assertions.assertThat(responseEntity).isNotNull();
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
         Assertions.assertThat(responseEntity.getBody()).isNull();
+    }
+
+    @Test
+    @DisplayName("delete return 403 when user is not admin")
+    public void deleteReturn403WhenUserIsNotAdmin() {
+
+        ResponseEntity<Void> responseEntity = testRestTemplateRoleUser.exchange(
+                "/animes/admin/1", HttpMethod.DELETE,
+                null, Void.class);
+        Assertions.assertThat(responseEntity).isNotNull();
+        Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.FORBIDDEN);
     }
 
     @Test
@@ -141,7 +184,7 @@ class AnimeControllerIntegrationTest {
 
         Anime animeToBeUpdated = AnimeCreator.createAnimeValidAnime();
 
-        ResponseEntity<Void> responseEntity = restTemplate.exchange("/animes/1", HttpMethod.PUT,
+        ResponseEntity<Void> responseEntity = testRestTemplateRoleUser.exchange("/animes/1", HttpMethod.PUT,
                 createJsonHttpEntity(animeToBeUpdated), Void.class);
         Assertions.assertThat(responseEntity).isNotNull();
         Assertions.assertThat(responseEntity.getStatusCode()).isEqualTo(HttpStatus.NO_CONTENT);
