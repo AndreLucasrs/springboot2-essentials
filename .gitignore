@@ -554,5 +554,3 @@ healthchecksdb
 MigrationBackup/
 
 # End of https://www.gitignore.io/api/maven,eclipse,angular,notepadpp,visualstudio,jetbrains+all
-/.mvn/
-/.mvn/wrapper/
