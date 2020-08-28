@@ -37,7 +37,6 @@ public class AnimeController {
     }
 
     @GetMapping(path = "/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Anime> findById(@PathVariable Long id, @AuthenticationPrincipal UserDetails userDetails) {
 
         log.info("User logger in ", userDetails);
@@ -59,8 +58,7 @@ public class AnimeController {
         return ResponseEntity.ok(animeSalvo);
     }
 
-    @DeleteMapping(value = "/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @DeleteMapping(value = "/admin/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
