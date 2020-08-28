@@ -68,7 +68,7 @@ class AnimeControllerTest {
     public void findByIdReturnAnimeWhenSuccessful() {
         Long expectedId = AnimeCreator.createAnimeValidAnime().getId();
 
-        Anime anime = animeController.findById(1L).getBody();
+        Anime anime = animeController.findById(1L, null).getBody();
         Assertions.assertThat(anime).isNotNull();
         Assertions.assertThat(anime.getId()).isNotNull();
         Assertions.assertThat(anime.getId()).isEqualTo(expectedId);

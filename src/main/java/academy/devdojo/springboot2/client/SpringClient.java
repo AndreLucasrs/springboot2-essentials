@@ -5,6 +5,7 @@ import academy.devdojo.springboot2.wrapper.PageableResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.Arrays;
@@ -16,6 +17,8 @@ public class SpringClient {
     private static final String URL = "http://localhost:8080/animes";
     
     public static void main(String[] args) {
+
+        System.out.println(new BCryptPasswordEncoder().encode("test"));
 
         //GET
 //        testGetWithRestTemplate();
